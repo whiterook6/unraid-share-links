@@ -1,0 +1,32 @@
+{
+  "name": "share-files",
+  "version": "0.1.0",
+  "description": "CLI to manage file share links backed by SQLite",
+  "type": "module",
+  "bin": {
+    "share": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --banner:js=\"#!/usr/bin/env node\"",
+    "dev": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --banner:js=\"#!/usr/bin/env node\" --watch",
+    "typecheck": "tsc --noEmit",
+    "setup": "npm run build && npm link",
+    "teardown": "npm unlink -g share-files"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/columnify": "^1.5.4",
+    "@types/node": "^22.15.30",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "columnify": "^1.6.0",
+    "commander": "^15.0.0"
+  }
+}
