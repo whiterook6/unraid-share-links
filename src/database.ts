@@ -27,7 +27,7 @@ const configDir = (): string => {
   }
 
   return path.join(os.homedir(), ".config", APP_NAME);
-}
+};
 
 const resolveDbPath = (): string => {
   const dbPath =
@@ -35,7 +35,7 @@ const resolveDbPath = (): string => {
 
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   return dbPath;
-}
+};
 
 const initSchema = (db: DatabaseSync): void => {
   db.exec("PRAGMA journal_mode = WAL");
@@ -52,7 +52,7 @@ const initSchema = (db: DatabaseSync): void => {
       expires_at TEXT
     );
   `);
-}
+};
 
 export const getDatabase = (): DatabaseSync => {
   if (!database) {
@@ -61,4 +61,4 @@ export const getDatabase = (): DatabaseSync => {
   }
 
   return database;
-}
+};

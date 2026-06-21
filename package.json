@@ -13,6 +13,7 @@
     "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --banner:js=\"#!/usr/bin/env node\"",
     "dev": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --banner:js=\"#!/usr/bin/env node\" --watch",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
     "setup": "npm run build && npm link",
     "teardown": "npm unlink -g share-files"
   },
@@ -23,6 +24,7 @@
     "@types/columnify": "^1.5.4",
     "@types/node": "^24.13.0",
     "esbuild": "^0.25.5",
+    "prettier": "^3.8.4",
     "typescript": "^5.8.3"
   },
   "dependencies": {

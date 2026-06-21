@@ -7,4 +7,4 @@ export const verifyFile = (absolutePath: string) => {
   if (!fs.statSync(absolutePath).isFile()) {
     throw new Error(`Path is not a file: ${absolutePath}`);
   }
-}
+};
