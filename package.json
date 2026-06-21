@@ -17,11 +17,11 @@
     "teardown": "npm unlink -g share-files"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24.15.0"
   },
   "devDependencies": {
     "@types/columnify": "^1.5.4",
-    "@types/node": "^22.15.30",
+    "@types/node": "^24.13.0",
     "esbuild": "^0.25.5",
     "typescript": "^5.8.3"
   },

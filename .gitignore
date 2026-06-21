@@ -1,5 +1,6 @@
 node_modules/
 dist/
+share-files.db
 .DS_Store
 .cursor
 .vscode
