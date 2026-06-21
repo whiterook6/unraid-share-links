@@ -1,15 +1,44 @@
 import { getDatabase } from "./database";
 import { randomBytes } from "node:crypto";
 import { verifyFile } from "./file";
+import path from "node:path";
+import columnify from "columnify";
+import { getConfig } from "./config";
+import { getShareFormatter } from "./share.model";
+import { list } from "./list";
 
 export const add = (
-  path: string,
+  filePath: string,
   options: Partial<{
     expires: string;
   }>
 ) => {
-  verifyFile(path);
+  const absolutePath = path.resolve(filePath);
+  verifyFile(absolutePath);
+
+  // verify the date
+  if (options.expires) {
+    try {
+      new Date(options.expires);
+    } catch (error) {
+      console.error("Invalid expiration date");
+      return;
+    }
+  }
+
   const database = getDatabase();
+  const rootUrl = getConfig("rootUrl") || "http://localhost:3000";
+  const shareFormatter = getShareFormatter(rootUrl);
+
+  // check if the path is already in the database
+  const existingShare = database
+    .prepare("SELECT * FROM shares WHERE path = ?")
+    .get(absolutePath);
+  if (existingShare) {
+    console.log(columnify(shareFormatter(existingShare)));
+    return;
+  }
+
   const hash = randomBytes(16).toString("hex");
   const now = new Date().toISOString();
   const expiresAt = options.expires
@@ -19,5 +48,7 @@ export const add = (
     .prepare(
       "INSERT INTO shares (hash, path, created_at, expires_at) VALUES (?, ?, ?, ?)"
     )
-    .run(hash, path, now, expiresAt);
+    .run(hash, absolutePath, now, expiresAt);
+
+  return list();
 };

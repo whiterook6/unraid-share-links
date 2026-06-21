@@ -4,14 +4,19 @@
   "description": "CLI to manage file share links backed by SQLite",
   "type": "module",
   "bin": {
-    "share": "./dist/index.js"
+    "share": "./dist/cli.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --banner:js=\"#!/usr/bin/env node\"",
-    "dev": "esbuild src/index.ts --bundle --platform=node --format=esm --outdir=dist --banner:js=\"#!/usr/bin/env node\" --watch",
+    "build": "npm run build:cli && npm run build:server",
+    "build:cli": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --banner:js=\"#!/usr/bin/env node\"",
+    "build:server": "esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --packages=external",
+    "dev": "npm run dev:cli & npm run dev:server",
+    "dev:cli": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --banner:js=\"#!/usr/bin/env node\" --watch",
+    "dev:server": "esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --watch",
+    "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "setup": "npm run build && npm link",
@@ -28,7 +33,9 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@fastify/helmet": "^13.0.2",
     "columnify": "^1.6.0",
-    "commander": "^15.0.0"
+    "commander": "^15.0.0",
+    "fastify": "^5.8.5"
   }
 }

@@ -1,5 +1,7 @@
 import columnify from "columnify";
 import { getDatabase } from "./database";
+import { getConfig } from "./config";
+import { getShareFormatter } from "./share.model";
 
 export const list = () => {
   const database = getDatabase();
@@ -8,7 +10,8 @@ export const list = () => {
       `SELECT
         path,
         hash,
-        COALESCE(expires_at, 'Never') AS expires FROM shares ORDER BY created_at`
+        created_at,
+        COALESCE(expires_at, 'Never') AS expires_at FROM shares ORDER BY created_at`
     )
     .all();
 
@@ -16,5 +19,7 @@ export const list = () => {
     return;
   }
 
-  console.log(columnify(shares));
+  const rootUrl = getConfig("rootUrl") || "http://localhost:3000";
+  const shareFormatter = getShareFormatter(rootUrl);
+  console.log(columnify(shares.map(shareFormatter)));
 };
