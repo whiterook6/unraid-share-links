@@ -13,7 +13,7 @@ await server.register(helmet);
 server.get(
   "/:hash",
   schemas.get,
-  async (
+  (
     request: FastifyRequest<{
       Params: {
         hash: string;
@@ -21,6 +21,8 @@ server.get(
     }>,
     reply: FastifyReply
   ) => {
+    const sendNotFound = () => reply.status(404).send("not found");
+
     const hash = request.params.hash;
     const database = getDatabase();
     const share = database
@@ -35,23 +37,17 @@ server.get(
       | undefined;
 
     if (!share) {
-      return reply.status(404).send({
-        error: "share not found",
-      });
+      return sendNotFound();
     }
 
     if (share.expires_at && new Date(share.expires_at) < new Date()) {
-      return reply.status(410).send({
-        error: "share expired",
-      });
+      return sendNotFound();
     }
 
     try {
       verifyFile(share.path);
     } catch (error) {
-      return reply.status(404).send({
-        error: "file not found",
-      });
+      return sendNotFound();
     }
 
     let readStream: ReadStream;
