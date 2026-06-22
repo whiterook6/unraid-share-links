@@ -1,7 +1,8 @@
 import fs from "node:fs";
 
-export const verifyFile = (absolutePath: string) => {
-  if (!fs.statSync(absolutePath).isFile()) {
+export const verifyFile = (absolutePath: string): number => {
+  const stat = fs.statSync(absolutePath);
+  if (!stat.isFile()) {
     // check if file is a file
     throw new Error(`Path is not a file: ${absolutePath}`);
   }
@@ -11,4 +12,6 @@ export const verifyFile = (absolutePath: string) => {
   } catch (error) {
     throw new Error(`File is not readable: ${absolutePath}`);
   }
+
+  return stat.size;
 };

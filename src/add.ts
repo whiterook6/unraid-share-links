@@ -14,13 +14,12 @@ export const add = (
   }>
 ) => {
   const absolutePath = path.resolve(filePath);
-  verifyFile(absolutePath);
+  const filesize = verifyFile(absolutePath);
 
   // verify the date
   if (options.expires) {
-    try {
-      new Date(options.expires);
-    } catch (error) {
+    const expires = new Date(options.expires);
+    if (Number.isNaN(expires.getTime())) {
       console.error("Invalid expiration date");
       return;
     }
@@ -39,16 +38,26 @@ export const add = (
     return;
   }
 
-  const hash = randomBytes(16).toString("hex");
-  const now = new Date().toISOString();
+  const key = randomBytes(16).toString("hex");
+  const createdAt = new Date().toISOString();
   const expiresAt = options.expires
     ? new Date(options.expires).toISOString()
     : null;
   database
-    .prepare(
-      "INSERT INTO shares (hash, path, created_at, expires_at) VALUES (?, ?, ?, ?)"
-    )
-    .run(hash, absolutePath, now, expiresAt);
+    .prepare(`INSERT INTO shares (
+  path,
+  key,
+  filesize,
+  created_at,
+  expires_at
+) VALUES (?, ?, ?, ?, ?)`
+    ).run(
+      absolutePath,
+      key,
+      filesize,
+      createdAt,
+      expiresAt
+    );
 
   return list();
 };

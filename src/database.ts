@@ -46,8 +46,9 @@ const initSchema = (db: DatabaseSync): void => {
     );
 
     CREATE TABLE IF NOT EXISTS shares (
-      hash       TEXT PRIMARY KEY,
+      key        TEXT PRIMARY KEY,
       path       TEXT NOT NULL UNIQUE,
+      filesize   INTEGER NOT NULL,
       created_at TEXT NOT NULL,
       expires_at TEXT
     );

@@ -22,7 +22,7 @@ program.command("list").action(() => list());
 
 program
   .command("remove")
-  .argument("<pathOrHash>", "The path or hash of the share to remove")
-  .action((pathOrHash: string) => remove(pathOrHash));
+  .argument("<pathOrKey>", "The path or key of the share to remove")
+  .action((pathOrKey: string) => remove(pathOrKey));
 
 program.parse(process.argv);

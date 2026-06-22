@@ -9,7 +9,8 @@ export const list = () => {
     .prepare(
       `SELECT
         path,
-        hash,
+        key,
+        filesize,
         created_at,
         COALESCE(expires_at, 'Never') AS expires_at FROM shares ORDER BY created_at`
     )

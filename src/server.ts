@@ -11,25 +11,28 @@ const server = fastify();
 await server.register(helmet);
 
 server.get(
-  "/:hash",
+  "/:key",
   schemas.get,
   (
     request: FastifyRequest<{
       Params: {
-        hash: string;
+        key: string;
       };
     }>,
     reply: FastifyReply
   ) => {
-    const sendNotFound = () => reply.status(404).send("not found");
+    const sendNotFound = (message: string = "not found") => reply.status(404).send(message);
+    const sendExpired = (message: string = "expired") => reply.status(410).send(message);
+    const sendInternalServerError = (error: string = "internal server error") => reply.status(500).send(error);
 
-    const hash = request.params.hash;
+    const key = request.params.key;
     const database = getDatabase();
     const share = database
-      .prepare("SELECT * FROM shares WHERE hash = ?")
-      .get(hash) as
+      .prepare("SELECT * FROM shares WHERE key = ?")
+      .get(key) as
       | {
-          hash: string;
+          key: string;
+          filesize: number;
           path: string;
           created_at: string;
           expires_at: string | null;
@@ -41,30 +44,32 @@ server.get(
     }
 
     if (share.expires_at && new Date(share.expires_at) < new Date()) {
-      return sendNotFound();
+      return sendExpired();
     }
 
+    let filesize: number;
     try {
-      verifyFile(share.path);
+      filesize = verifyFile(share.path);
     } catch (error) {
-      return sendNotFound();
+      return sendNotFound("file not found");
+    }
+
+    if (filesize !== share.filesize) {
+      return sendExpired("file contents changed");
     }
 
     let readStream: ReadStream;
     try {
       readStream = createReadStream(share.path);
     } catch (error) {
-      return reply.status(500).send({
-        error: "internal server error",
-      });
+      return sendInternalServerError();
     }
     if (!readStream) {
-      return reply.status(500).send({
-        error: "internal server error",
-      });
+      return sendInternalServerError();
     }
 
     return reply
+      .header("Content-Length", filesize)
       .header(
         "Content-Disposition",
         `attachment; filename="${basename(share.path)}"; filename*=UTF-8''${encodeURIComponent(basename(share.path))}`
