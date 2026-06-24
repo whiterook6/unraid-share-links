@@ -1,6 +1,6 @@
 import columnify from "columnify";
 import { getDatabase } from "./database";
-import { getConfig } from "./config";
+import { getRootUrl } from "./env";
 import { getShareFormatter } from "./share.model";
 
 export const list = () => {
@@ -19,7 +19,6 @@ export const list = () => {
     return;
   }
 
-  const rootUrl = getConfig("rootUrl") || "http://localhost:3000";
-  const shareFormatter = getShareFormatter(rootUrl);
+  const shareFormatter = getShareFormatter(getRootUrl());
   console.log(columnify(shares.map(shareFormatter)));
 };

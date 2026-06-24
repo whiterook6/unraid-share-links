@@ -3,6 +3,7 @@ import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import { ReadStream, createReadStream } from "node:fs";
 import { basename } from "node:path";
 import { getDatabase } from "./database";
+import { getPort } from "./env";
 import { verifyFile } from "./file";
 import { schemas } from "./server.schemas";
 
@@ -74,7 +75,7 @@ server.get(
 );
 
 try {
-  const address = await server.listen({ port: 3000, host: "0.0.0.0" });
+  const address = await server.listen({ port: getPort(), host: "0.0.0.0" });
   console.log(`Server is running on ${address}`);
 } catch (err) {
   console.error(err);

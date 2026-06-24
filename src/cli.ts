@@ -1,7 +1,6 @@
 import { program } from "commander";
 import { add } from "./add";
 import { clear } from "./clear";
-import { config } from "./config";
 import { list } from "./list";
 import { remove } from "./remove";
 
@@ -12,11 +11,6 @@ program
   .action((path, options: { expires?: string }) => add(path, options));
 
 program.command("clear").action(() => clear());
-
-program
-  .command("config")
-  .option("--root-url <url>", "The root URL to prepend to the share links")
-  .action((options: { rootUrl?: string }) => config(options));
 
 program.command("list").action(() => list());
 
