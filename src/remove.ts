@@ -1,11 +1,7 @@
-import { getDatabase } from "./database";
-import { list } from "./list";
+import columnify from "columnify";
+import { ShareService } from "./share.service";
 
 export const remove = (pathOrHash: string) => {
-  const database = getDatabase();
-  database
-    .prepare("DELETE FROM shares WHERE hash = ? OR path = ?")
-    .run(pathOrHash, pathOrHash);
-
-  return list();
+  const results = ShareService.remove(pathOrHash);
+  console.log(columnify(results));
 };

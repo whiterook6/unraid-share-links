@@ -2,10 +2,10 @@ import helmet from "@fastify/helmet";
 import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import { ReadStream, createReadStream } from "node:fs";
 import { basename } from "node:path";
-import { getDatabase } from "./database";
 import { getPort } from "./env";
 import { verifySharePath } from "./file";
 import { schemas } from "./server.schemas";
+import { ShareService } from "./share.service";
 
 const server = fastify();
 
@@ -25,24 +25,17 @@ server.get(
     const sendNotFound = () => reply.status(404).send("not found");
 
     const hash = request.params.hash;
-    const database = getDatabase();
-    const share = database
-      .prepare("SELECT * FROM shares WHERE hash = ?")
-      .get(hash) as
-      | {
-          hash: string;
-          path: string;
-          created_at: string;
-          expires_at: string | null;
-        }
-      | undefined;
+    const share = ShareService.getByHash(hash);
 
     if (!share) {
       return sendNotFound();
     }
 
-    if (share.expires_at && new Date(share.expires_at) < new Date()) {
-      return sendNotFound();
+    if (share.expires_at !== "Never") {
+      const expiresAt = new Date(share.expires_at);
+      if (!Number.isNaN(expiresAt.getTime()) && expiresAt < new Date()) {
+        return sendNotFound();
+      }
     }
 
     let resolvedPath: string;
