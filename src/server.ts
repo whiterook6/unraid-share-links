@@ -33,7 +33,7 @@ server.get(
 
     if (share.expires_at !== "Never") {
       const expiresAt = new Date(share.expires_at);
-      if (!Number.isNaN(expiresAt.getTime()) && expiresAt < new Date()) {
+      if (Number.isNaN(expiresAt.getTime()) || expiresAt < new Date()) {
         return sendNotFound();
       }
     }

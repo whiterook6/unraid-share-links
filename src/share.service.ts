@@ -1,4 +1,4 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { getDatabase } from "./database";
 import { getRootUrl } from "./env";
 import { getShareFormatter, Share } from "./share.model";
@@ -29,7 +29,7 @@ export const ShareService = {
     const now = new Date().toISOString();
 
     // verify the date
-    let expiresAt = null;
+    let expiresAt: string | null = null;
     if (options.expires) {
       const d = new Date(options.expires);
       if (Number.isNaN(d.getTime())) {
