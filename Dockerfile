@@ -19,8 +19,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 COPY --from=build /app/dist ./dist
-RUN ln -s /app/dist/cli.js /usr/local/bin/share
-
+RUN chmod +x /app/dist/cli.js && ln -s /app/dist/cli.js /usr/local/bin/share
 EXPOSE 3000
 
 CMD ["node", "dist/server.js"]

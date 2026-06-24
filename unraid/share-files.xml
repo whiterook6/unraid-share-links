@@ -25,5 +25,5 @@
   <Config Name="WebUI Port" Target="3000" Default="3000" Mode="tcp" Description="HTTP port for serving shared files" Type="Port" Display="always" Required="true" Mask="false">3000</Config>
   <Config Name="SHARE_FILES_ROOT_URL" Target="SHARE_FILES_ROOT_URL" Default="http://[IP]:[PORT:3000]" Mode="" Description="Public URL prefix for share links (use your reverse-proxy URL if applicable)" Type="Variable" Display="always" Required="true" Mask="false">http://[IP]:[PORT:3000]</Config>
   <Config Name="SHARE_FILES_DB" Target="SHARE_FILES_DB" Default="/config/shares.db" Mode="" Description="Path to the SQLite database file" Type="Variable" Display="advanced" Required="true" Mask="false">/config/shares.db</Config>
-  <Config Name="PORT" Target="PORT" Default="3000" Mode="" Description="HTTP port inside the container" Type="Variable" Display="advanced" Required="true" Mask="false">3000</Config>
+  <Config Name="PORT" Target="PORT" Default="3000" Mode="" Description="HTTP port the server listens on inside the container (must match the container port mapping target; default 3000)" Type="Variable" Display="advanced" Required="true" Mask="false">3000</Config>
 </Container>

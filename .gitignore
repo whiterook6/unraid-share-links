@@ -4,3 +4,4 @@ share-files.db
 .DS_Store
 .cursor
 .vscode
+appdata/
