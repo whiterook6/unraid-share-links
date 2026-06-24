@@ -4,7 +4,7 @@ import { ReadStream, createReadStream } from "node:fs";
 import { basename } from "node:path";
 import { getDatabase } from "./database";
 import { getPort } from "./env";
-import { verifyFile } from "./file";
+import { verifySharePath } from "./file";
 import { schemas } from "./server.schemas";
 
 const server = fastify();
@@ -46,7 +46,7 @@ server.get(
     }
 
     try {
-      verifyFile(share.path);
+      verifySharePath(share.path);
     } catch (error) {
       return sendNotFound();
     }
