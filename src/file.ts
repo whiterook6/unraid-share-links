@@ -2,19 +2,34 @@ import fs from "node:fs";
 import path from "node:path";
 import { getShareRoot } from "./env";
 
+const isInsideRoot = (root: string, candidate: string): boolean => {
+  const relative = path.relative(root, candidate);
+  return (
+    relative !== ".." &&
+    !relative.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relative)
+  );
+};
+
 export const verifySharePath = (filePath: string): string => {
   const root = path.resolve(getShareRoot());
   const resolved = path.isAbsolute(filePath)
     ? path.resolve(filePath)
     : path.resolve(root, filePath);
-  const relative = path.relative(root, resolved);
 
-  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+  if (!isInsideRoot(root, resolved)) {
     throw new Error(`Path is outside share root (${root}): ${resolved}`);
   }
 
   verifyFile(resolved);
-  return resolved;
+
+  const realRoot = fs.realpathSync(root);
+  const realResolved = fs.realpathSync(resolved);
+  if (!isInsideRoot(realRoot, realResolved)) {
+    throw new Error(`Path resolves outside share root (${root}): ${resolved}`);
+  }
+
+  return realResolved;
 };
 
 export const verifyFile = (absolutePath: string) => {

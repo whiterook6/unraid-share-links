@@ -45,15 +45,16 @@ server.get(
       return sendNotFound();
     }
 
+    let resolvedPath: string;
     try {
-      verifySharePath(share.path);
+      resolvedPath = verifySharePath(share.path);
     } catch (error) {
       return sendNotFound();
     }
 
     let readStream: ReadStream;
     try {
-      readStream = createReadStream(share.path);
+      readStream = createReadStream(resolvedPath);
     } catch (error) {
       return reply.status(500).send({
         error: "internal server error",
@@ -68,7 +69,7 @@ server.get(
     return reply
       .header(
         "Content-Disposition",
-        `attachment; filename="${basename(share.path)}"; filename*=UTF-8''${encodeURIComponent(basename(share.path))}`
+        `attachment; filename="${basename(resolvedPath)}"; filename*=UTF-8''${encodeURIComponent(basename(resolvedPath))}`
       )
       .send(readStream);
   }

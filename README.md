@@ -55,7 +55,7 @@ docker exec -it share-files share list
 docker exec -it share-files share remove "/shares/example.pdf"
 ```
 
-Paths passed to `share add` must exist under `/shares`. Relative paths are resolved against the share root, so a filename alone is enough (e.g. `share add "example.pdf"`).
+Paths passed to `share add` must exist under `/shares`. Relative paths are resolved against the share root, so a filename alone is enough (e.g. `share add "example.pdf"`). Note: `share remove` matches on the stored absolute path (e.g. `/shares/example.pdf`) or on the share hash.
 
 ## Unraid
 
