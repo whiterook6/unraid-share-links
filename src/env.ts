@@ -13,3 +13,6 @@ export const getRootUrl = (): string => {
     process.env.SHARE_FILES_ROOT_URL ?? `http://localhost:${getPort()}`;
   return formatRootUrl(rootUrl);
 };
+
+export const getShareRoot = (): string =>
+  process.env.SHARE_FILES_ROOT ?? process.cwd();

@@ -1,7 +1,6 @@
 import { getDatabase } from "./database";
 import { randomBytes } from "node:crypto";
-import { verifyFile } from "./file";
-import path from "node:path";
+import { verifySharePath } from "./file";
 import columnify from "columnify";
 import { getRootUrl } from "./env";
 import { getShareFormatter } from "./share.model";
@@ -13,8 +12,7 @@ export const add = (
     expires: string;
   }>
 ) => {
-  const absolutePath = path.resolve(filePath);
-  verifyFile(absolutePath);
+  const absolutePath = verifySharePath(filePath);
 
   // verify the date
   if (options.expires) {
