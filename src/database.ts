@@ -40,11 +40,6 @@ const resolveDbPath = (): string => {
 const initSchema = (db: DatabaseSync): void => {
   db.exec("PRAGMA journal_mode = WAL");
   db.exec(`
-    CREATE TABLE IF NOT EXISTS config (
-      key   TEXT PRIMARY KEY,
-      value TEXT NOT NULL
-    );
-
     CREATE TABLE IF NOT EXISTS shares (
       hash       TEXT PRIMARY KEY,
       path       TEXT NOT NULL UNIQUE,

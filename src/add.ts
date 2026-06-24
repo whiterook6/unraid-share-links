@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { verifyFile } from "./file";
 import path from "node:path";
 import columnify from "columnify";
-import { getConfig } from "./config";
+import { getRootUrl } from "./env";
 import { getShareFormatter } from "./share.model";
 import { list } from "./list";
 
@@ -27,8 +27,7 @@ export const add = (
   }
 
   const database = getDatabase();
-  const rootUrl = getConfig("rootUrl") || "http://localhost:3000";
-  const shareFormatter = getShareFormatter(rootUrl);
+  const shareFormatter = getShareFormatter(getRootUrl());
 
   // check if the path is already in the database
   const existingShare = database

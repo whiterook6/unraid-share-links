@@ -1,7 +1,7 @@
-node_modules/
-dist/
+node_modules
+dist
+.git
 share-files.db
 .DS_Store
 .cursor
 .vscode
-appdata/
