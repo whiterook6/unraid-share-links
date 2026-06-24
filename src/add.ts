@@ -1,10 +1,6 @@
-import { getDatabase } from "./database";
-import { randomBytes } from "node:crypto";
-import { verifySharePath } from "./file";
 import columnify from "columnify";
-import { getRootUrl } from "./env";
-import { getShareFormatter } from "./share.model";
-import { list } from "./list";
+import { verifySharePath } from "./file";
+import { ShareService } from "./share.service";
 
 export const add = (
   filePath: string,
@@ -14,38 +10,20 @@ export const add = (
 ) => {
   const absolutePath = verifySharePath(filePath);
 
-  // verify the date
-  if (options.expires) {
-    try {
-      new Date(options.expires);
-    } catch (error) {
-      console.error("Invalid expiration date");
-      return;
-    }
-  }
-
-  const database = getDatabase();
-  const shareFormatter = getShareFormatter(getRootUrl());
-
-  // check if the path is already in the database
-  const existingShare = database
-    .prepare("SELECT * FROM shares WHERE path = ?")
-    .get(absolutePath);
+  const existingShare = ShareService.getByPath(absolutePath);
   if (existingShare) {
-    console.log(columnify(shareFormatter(existingShare)));
+    console.log(columnify([existingShare]));
     return;
   }
 
-  const hash = randomBytes(16).toString("hex");
-  const now = new Date().toISOString();
-  const expiresAt = options.expires
-    ? new Date(options.expires).toISOString()
-    : null;
-  database
-    .prepare(
-      "INSERT INTO shares (hash, path, created_at, expires_at) VALUES (?, ?, ?, ?)"
-    )
-    .run(hash, absolutePath, now, expiresAt);
-
-  return list();
+  try {
+    const results = ShareService.add(absolutePath, options);
+    console.log(columnify(results));
+  } catch (error) {
+    if (error instanceof Error && error.message === "Invalid expiration date") {
+      console.error(error.message);
+      return;
+    }
+    throw error;
+  }
 };

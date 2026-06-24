@@ -1,6 +1,5 @@
-import { getDatabase } from "./database";
+import { ShareService } from "./share.service";
 
 export const clear = () => {
-  const database = getDatabase();
-  database.exec("DELETE FROM shares");
+  ShareService.clear();
 };
