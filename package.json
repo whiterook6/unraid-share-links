@@ -11,10 +11,10 @@
   ],
   "scripts": {
     "build": "npm run build:cli && npm run build:server",
-    "build:cli": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --banner:js=\"#!/usr/bin/env -S node --disable-warning=ExperimentalWarning\"",
+    "build:cli": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --banner:js=\"#!/usr/bin/env node\"",
     "build:server": "esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js",
     "dev": "npm run dev:cli & npm run dev:server",
-    "dev:cli": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --banner:js=\"#!/usr/bin/env -S node --disable-warning=ExperimentalWarning\" --watch",
+    "dev:cli": "esbuild src/cli.ts --bundle --platform=node --format=esm --outfile=dist/cli.js --banner:js=\"#!/usr/bin/env node\" --watch",
     "dev:server": "esbuild src/server.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server.js --watch",
     "start": "node --disable-warning=ExperimentalWarning dist/server.js",
     "typecheck": "tsc --noEmit",
