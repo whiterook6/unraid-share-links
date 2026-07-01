@@ -44,16 +44,39 @@ Without `SHARE_FILES_ROOT` set, paths are scoped to the current working director
 
 ## Docker
 
-Build and run:
+Published image: [`whiterook6/quick-share`](https://hub.docker.com/r/whiterook6/quick-share)
+
+Run the published image:
 
 ```bash
-docker build -t share-files .
 docker run -d --name share-files \
   -p 3000:3000 \
   -e SHARE_FILES_ROOT_URL=http://localhost:3000 \
   -v ./appdata:/config \
-  -v /mnt/user/share-files:/shares:ro \
-  share-files
+  -v /path/to/shareable/files:/shares:ro \
+  whiterook6/quick-share:latest
+```
+
+Build locally:
+
+```bash
+docker build -t whiterook6/quick-share .
+docker run -d --name share-files \
+  -p 3000:3000 \
+  -e SHARE_FILES_ROOT_URL=http://localhost:3000 \
+  -v ./appdata:/config \
+  -v /path/to/shareable/files:/shares:ro \
+  whiterook6/quick-share
+```
+
+Publish to Docker Hub (build for `linux/amd64` on Apple Silicon):
+
+```bash
+docker login
+docker buildx build --platform linux/amd64 \
+  -t whiterook6/quick-share:0.1.0 \
+  -t whiterook6/quick-share:latest \
+  --push .
 ```
 
 Manage shares via `docker exec`:
@@ -68,8 +91,9 @@ Paths passed to `share add` must exist under `/shares`. Relative paths are resol
 
 ## Unraid
 
-1. Build and push the image to your registry, then update `Repository` in [`unraid/share-files.xml`](unraid/share-files.xml).
-2. In Unraid, add a custom template URL pointing at the raw XML in this repo (or copy the file locally).
+1. In Unraid, add a custom template URL:
+   `https://raw.githubusercontent.com/whiterook6/unraid-share/main/unraid/share-files.xml`
+2. Install the container (pulls `whiterook6/quick-share:latest`).
 3. Set **SHARE_FILES_ROOT_URL** to your public URL (e.g. `http://[IP]:[PORT:3000]` or a reverse-proxy URL).
 4. Set **Share Files** to the host folder you want to share (default `/mnt/user/share-files`). It is mounted read-only at `/shares` inside the container.
 5. Manage shares via the container console or SSH:

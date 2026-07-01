@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>share-files</Name>
-  <Repository>youruser/share-files:latest</Repository>
+  <Repository>whiterook6/quick-share:latest</Repository>
   <Registry>https://hub.docker.com/</Registry>
   <Network>bridge</Network>
   <MyIP/>
