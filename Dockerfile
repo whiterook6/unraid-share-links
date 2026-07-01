@@ -25,11 +25,14 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /app/dist/cli.js /usr/local/bin/docker-entrypoint.sh && \
     printf '%s\n' \
       '#!/bin/sh' \
-      'exec su-exec node node /app/dist/cli.js "$@"' \
+      'if [ "$(id -u)" = "0" ]; then' \
+      '  exec su-exec node node /app/dist/cli.js "$@"' \
+      'fi' \
+      'exec node /app/dist/cli.js "$@"' \
       > /usr/local/bin/share && \
     chmod +x /usr/local/bin/share && \
     mkdir -p /config && \
-    chown -R node:node /app /config
+    chown -R node:node /config
 
 EXPOSE 3000
 VOLUME /config
