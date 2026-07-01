@@ -7,6 +7,14 @@ import { verifySharePath } from "./file";
 import { schemas } from "./server.schemas";
 import { ShareService } from "./share.service";
 
+const contentDisposition = (fileName: string): string => {
+  const asciiFallback = fileName
+    .replace(/[^\x20-\x7E]/g, "_")
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"');
+  return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(fileName)}`;
+};
+
 const server = fastify();
 
 await server.register(helmet);
@@ -60,10 +68,7 @@ server.get(
     }
 
     return reply
-      .header(
-        "Content-Disposition",
-        `attachment; filename="${basename(resolvedPath)}"; filename*=UTF-8''${encodeURIComponent(basename(resolvedPath))}`
-      )
+      .header("Content-Disposition", contentDisposition(basename(resolvedPath)))
       .send(readStream);
   }
 );
