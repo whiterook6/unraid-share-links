@@ -22,4 +22,4 @@ RUN chmod +x /app/dist/cli.js && ln -s /app/dist/cli.js /usr/local/bin/share
 EXPOSE 3000
 VOLUME /shares
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "--disable-warning=ExperimentalWarning", "dist/server.js"]

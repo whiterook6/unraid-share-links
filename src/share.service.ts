@@ -3,6 +3,17 @@ import { getDatabase } from "./database";
 import { getRootUrl } from "./env";
 import { getShareFormatter, Share } from "./share.model";
 
+const parseExpiresAt = (expires: string): string => {
+  const d = new Date(expires);
+  if (Number.isNaN(d.getTime())) {
+    throw new Error("Invalid expiration date");
+  }
+  if (d <= new Date()) {
+    throw new Error("Expiration date must be in the future");
+  }
+  return d.toISOString();
+};
+
 export const ShareService = {
   list: (): Share[] => {
     const database = getDatabase();
@@ -25,17 +36,12 @@ export const ShareService = {
     options: Partial<{
       expires: string;
     }>
-  ): Share[] => {
+  ): Share => {
     const now = new Date().toISOString();
 
-    // verify the date
     let expiresAt: string | null = null;
     if (options.expires) {
-      const d = new Date(options.expires);
-      if (Number.isNaN(d.getTime())) {
-        throw new Error("Invalid expiration date");
-      }
-      expiresAt = d.toISOString();
+      expiresAt = parseExpiresAt(options.expires);
     }
 
     const database = getDatabase();
@@ -50,7 +56,25 @@ export const ShareService = {
       )
       .run(hash, resolvedPath, now, expiresAt);
 
-    return ShareService.list();
+    const share = ShareService.getByPath(resolvedPath);
+    if (!share) {
+      throw new Error(`Failed to create share for path: ${resolvedPath}`);
+    }
+    return share;
+  },
+
+  updateExpires: (resolvedPath: string, expires: string): Share => {
+    const expiresAt = parseExpiresAt(expires);
+    const database = getDatabase();
+    database
+      .prepare("UPDATE shares SET expires_at = ? WHERE path = ?")
+      .run(expiresAt, resolvedPath);
+
+    const share = ShareService.getByPath(resolvedPath);
+    if (!share) {
+      throw new Error(`Failed to update share for path: ${resolvedPath}`);
+    }
+    return share;
   },
 
   getByHash(key: string): Share | undefined {
@@ -61,7 +85,8 @@ export const ShareService = {
     if (!share) {
       return undefined;
     }
-    return getShareFormatter(getRootUrl())(share);
+    const shareFormatter = getShareFormatter(getRootUrl());
+    return shareFormatter(share);
   },
 
   getByPath(path: string): Share | undefined {
@@ -72,7 +97,8 @@ export const ShareService = {
     if (!share) {
       return undefined;
     }
-    return getShareFormatter(getRootUrl())(share);
+    const shareFormatter = getShareFormatter(getRootUrl());
+    return shareFormatter(share);
   },
 
   clear: () => {

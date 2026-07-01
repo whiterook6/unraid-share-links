@@ -5,7 +5,8 @@ This CLI manages a set of fileshare links that can be accessed by a simple files
 ## Commands
 
 - `share add "/path/to/file with.extension"`: create a shareable link (or get an existing one)
-- `share list`: show current shares
+- `share add "/path/to/file" --expires "2026-12-31T23:59:59Z"`: create a temporary link that expires at the given date/time (ISO 8601)
+- `share list`: show current shares (includes an `expired` column for time-limited links)
 - `share remove "/path/to/file with extension"`: remove a share by path
 - `share remove hashcode`: remove a share by hash
 - `share clear`: remove all shares
@@ -20,6 +21,14 @@ This CLI manages a set of fileshare links that can be accessed by a simple files
 | `PORT`                 | HTTP port for the fileserver                              | `3000`                                                        |
 
 `SHARE_FILES_ROOT` is the on-disk directory boundary. `SHARE_FILES_ROOT_URL` is the HTTP prefix for generated links — they are unrelated.
+
+## Expiration
+
+Shares are permanent by default. Pass `--expires` with an ISO 8601 date/time to create a temporary link (for example `2026-12-31T23:59:59Z` or `2026-12-31`). The expiration must be in the future.
+
+If a file is already shared, running `share add` again without `--expires` returns the existing link unchanged. Running it again with `--expires` updates the expiration on that share (the hash and URL stay the same).
+
+Expired links return 404 from the fileserver. Expired shares remain in the database and are marked in `share list` until you remove them.
 
 ## Local development
 
@@ -74,9 +83,11 @@ docker exec -it share-files share list
 
 `share list` shows nothing currently shared.
 
-`share add "./README.md"` creates a share for the README.md file.
+`share add "./README.md"` creates a permanent share for the README.md file.
 
-`share list` shows a single share with a full URL.
+`share add "./README.md" --expires "2026-12-31T23:59:59Z"` sets or updates an expiration on that share.
+
+`share list` shows a single share with a full URL and whether it has expired.
 
 `share remove "./README.md"` removes the share.
 
